@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="rainy">#297584</color>
+    <color name="sunny">#faa722</color>
+    <color name="stormy">#033248</color>
+    <color name="cloudy">#6cacc9</color>
+    <color name="snowy">#a9b8bf</color>
+    <color name="black">#000000</color>
+
+</resources>
