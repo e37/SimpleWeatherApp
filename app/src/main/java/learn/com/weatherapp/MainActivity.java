@@ -88,8 +88,8 @@ public class MainActivity extends AppCompatActivity {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 30000, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 100, 30000, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 3, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 3, locationListener);
         checkEnabledProviders();
     }
 

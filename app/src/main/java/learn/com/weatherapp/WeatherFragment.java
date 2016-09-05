@@ -106,6 +106,10 @@ public class WeatherFragment extends Fragment {
         String updatedOn = df.format(new Date(json.getLong("dt") * 1000));
         updatedField.setText("Last update: " + updatedOn);
 
+        setWeatherIcon(details.getInt("id"),
+                json.getJSONObject("sys").getLong("sunrise") * 1000,
+                json.getJSONObject("sys").getLong("sunset") * 1000);
+
 
         Log.e("SimpleWeather", "One or more fields not found in the JSON data");
 
