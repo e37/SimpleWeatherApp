@@ -15,12 +15,14 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 public class FetchData {
-    private static final String OPEN_WEATHER_MAP_API = "http://api.openweathermap.org/data/2.5/weather?q=";
+//    private static final String OPEN_WEATHER_MAP_API = "http://api.openweathermap.org/data/2.5/weather?q=";
+    private static final String OPEN_WEATHER_MAP_API = "http://api.openweathermap.org/data/2.5/weather?lat=";
 
     @Nullable
-    public static JSONObject getJSON(Context context, String city) throws IOException, JSONException {
+//    public static JSONObject getJSON(Context context, String city) throws IOException, JSONException {
+    public static JSONObject getJSON(Context context, int latitude, int longitude) throws IOException, JSONException {
 
-        URL url = new URL(OPEN_WEATHER_MAP_API + city + "&APPID=324d4fd4cd536fc14529b54980d72371");
+        URL url = new URL(OPEN_WEATHER_MAP_API + latitude+"&lon=" +longitude+ "&APPID=324d4fd4cd536fc14529b54980d72371");
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -38,9 +40,11 @@ public class FetchData {
         // This value will be 404 if the request was not
         // successful
         if (data.getInt("cod") != 200) {
-            Log.e("myLogs", "getJSON: " + data.getInt("cod"));
+            Log.e("myTags", "getJSON: " + data.getInt("cod"));
             return null;
-        }
+        }else
+            Log.e("myTags", "getJSON:  OK@@@@@@@@@@@@@@@@@!!! " + data.getInt("cod"));
+
         return data;
 
 //        } catch (Exception e) {
