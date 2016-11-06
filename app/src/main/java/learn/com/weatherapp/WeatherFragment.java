@@ -1,13 +1,10 @@
 package learn.com.weatherapp;
 
 import android.Manifest;
-import android.content.pm.PackageManager;
 import android.graphics.Typeface;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +21,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class WeatherFragment extends Fragment {
+public class WeatherFragment extends android.app.Fragment {
     Typeface weatherFont;
 
     TextView cityField;
@@ -52,9 +49,6 @@ public class WeatherFragment extends Fragment {
         weatherImage = (ImageView) rootView.findViewById(R.id.weather_icon);
         provider = (TextView) rootView.findViewById(R.id.provider_type);
 
-//        TextView providerType = (TextView) rootView.findViewById(R.id.provider_type);  getFragmentManager().findFragmentById(R.id.container).getView().findViewById(R.id.provider_type);
-
-
         weatherIcon = (TextView) rootView.findViewById(R.id.weather_icon1);
         weatherIcon.setTypeface(weatherFont);
         return rootView;
@@ -63,7 +57,7 @@ public class WeatherFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        updateWeatherData(new SaveCityOfUser(getActivity()).getCity());
+        updateWeatherData(new SaveCityOfUser(getActivity()).getCity());
         updateWeatherData((int)MyLocationListener.imHere.getLatitude(),(int)MyLocationListener.imHere.getLongitude());
     }
 
@@ -98,11 +92,43 @@ public class WeatherFragment extends Fragment {
             }
         }.start();
     }
+    public void updateWeatherData(final String city) {
+        new Thread() {
+            public void run() {
+                final JSONObject json;
+                try {
+                    json = FetchData.getJSON(getActivity(),city);
+                    if (json == null) {
+                        handler.post(new Runnable() {
+                            public void run() {
+                                Toast.makeText(getActivity(),
+                                        getActivity().getString(R.string.place_not_found),
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    } else {
+                        handler.post(new Runnable() {
+                            public void run() {
+                                try {
+                                    renderWeather(json);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
 
     private void renderWeather(JSONObject json) throws JSONException {
 
-        cityField.setText(new StringBuilder().append(json.getString("name").toUpperCase(Locale.US)).append(", ").append(json.getJSONObject("sys").getString("country")).toString());
 
+        cityField.setText(new StringBuilder().append(json.getString("name").toUpperCase(Locale.US)).append(", ").append(json.getJSONObject("sys").getString("country")).toString());
+//
         JSONObject details = json.getJSONArray("weather").getJSONObject(0);
         JSONObject main = json.getJSONObject("main");
         detailsField.setText(
@@ -119,13 +145,12 @@ public class WeatherFragment extends Fragment {
                 json.getJSONObject("sys").getLong("sunset") * 1000);
 
 
-        Log.e("SimpleWeather", "One or more fields not found in the JSON data");
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
-//            Location location = MyLocationListener.SetUpLocationListener(getContext());
-//            provider.setText((int) location.getAltitude());
-        }
+//            // Location location = MyLocationListener.SetUpLocationListener(getContext());
+//          //  provider.setText((int) location.getAltitude());
+//        }
     }
 
     // http://openweathermap.org/weather-conditions
@@ -164,8 +189,10 @@ public class WeatherFragment extends Fragment {
                     weatherImage.setImageResource(R.drawable.cloudy);
                     changeBackgroundWithHandler(R.color.cloudy);
                     break;
-//                case 6 : (R.string.weather_snowy);
-//                    break;
+                case 6 :
+                    weatherImage.setImageResource(R.drawable.snowy);
+                    changeBackgroundWithHandler(R.color.snowy);
+                    break;
                 case 5:
                     weatherImage.setImageResource(R.drawable.rainy);
                     changeBackgroundWithHandler(R.color.rainy);
@@ -179,15 +206,11 @@ public class WeatherFragment extends Fragment {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                if (getFragmentManager().findFragmentById(R.id.container) != null)
+                if (getFragmentManager().findFragmentById(R.id.container) != null) {
                     getFragmentManager().findFragmentById(R.id.container).getView().setBackgroundColor(getResources().getColor(resId));
-                else
-                    Toast.makeText(getContext(), "fragment not found", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
 
-//    public void changeCity(String city) {
-//        updateWeatherData(city);
-//    }
 }
