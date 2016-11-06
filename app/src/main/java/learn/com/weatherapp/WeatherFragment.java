@@ -171,7 +171,7 @@ public class WeatherFragment extends android.app.Fragment {
 
             }
         } else {
-            Log.e("myTags", "setWeatherIcon: " + actualId);
+            Log.e("myTags", "setWeather12Icon: " + actualId);
             switch (id) {
                 case 2:
                     weatherImage.setImageResource(R.drawable.rainy);
